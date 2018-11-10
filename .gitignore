@@ -1,0 +1,5 @@
+*.madeline
+*.madeline.lock
+*.log
+*.save
+*.swap
