@@ -207,7 +207,7 @@ class EventHandler extends \danog\MadelineProto\EventHandler
             'new_settings' => [
                 '_' => 'account.passwordInputSettings',
                 'new_salt' => new \danog\MadelineProto\TL\Types\Bytes($new_salt),
-                'new_password_hash' => new \daong\MadelineProto\TL\Types\Bytes(hash('sha256', $new_salt.$newpassword.$new_salt, true)),
+                'new_password_hash' => new \danog\MadelineProto\TL\Types\Bytes(hash('sha256', $new_salt.$newpassword.$new_salt, true)),
                 'email' => 'your@email.com'
             ]
         ]);
