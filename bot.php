@@ -30,10 +30,13 @@ class EventHandler extends \danog\MadelineProto\EventHandler
     private $ourid = null;
     private $init = false;
 
-    private function pcall($method, $params, $noresponse = false)
+    private function pcall($method, $params, $noresponse = false, $queue = NULL)
     {
+        $arggs=['datacenter' => $this->API->datacenter->curdc, 'noResponse' => $noresponse];
+        if ($queue)
+            $arggs['queue'] = $queue;
         try {
-            return $this->API->method_call($method, $params, ['datacenter' => $this->API->datacenter->curdc, 'noResponse' => $noresponse]);
+            return $this->API->method_call($method, $params, $arggs);
         } catch (\danog\MadelineProto\Exception $e) {
             $this->messages->sendMessage(['peer' => self::logchannel, 'text' => (string)$e->getMessage()]);
         } catch (\danog\MadelineProto\TL\Exception $e) {
@@ -152,7 +155,7 @@ class EventHandler extends \danog\MadelineProto\EventHandler
                 $this->clearchatk($a[1]);
                 $t = microtime(true)-$start;
                 echo "Messages deleted in $t s\n";
-                $this->leavechat($a[1]);
+                $this->leavechat($a[1], 'clearchat');
                 $this->sm($chatID, "/finepulizia $a[1]");
                 $this->sm(self::logchannel, "#clearchat $a[1] $t secondi");
             } elseif ($a[0] === "!ping") {
@@ -338,7 +341,7 @@ class EventHandler extends \danog\MadelineProto\EventHandler
 
     private function deleteMessages($chatID, $mids)
     {
-        return (bool)$this->pcall("channels.deleteMessages", ['channel' => $chatID, 'id' => $mids], true);
+        return (bool)$this->pcall("channels.deleteMessages", ['channel' => $chatID, 'id' => $mids], true, 'clearchat');
     }
 
     public function joinchat($invite)
@@ -350,9 +353,9 @@ class EventHandler extends \danog\MadelineProto\EventHandler
         }
     }
 
-    public function leavechat($id)
+    public function leavechat($id, $q)
     {
-        return $this->pcall("channels.leaveChannel", ['channel' => $id]);
+        return $this->pcall("channels.leaveChannel", ['channel' => $id], false, $q);
     }
 
     public function sm($chatID, $text)
