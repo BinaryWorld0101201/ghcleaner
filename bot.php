@@ -311,7 +311,7 @@ class EventHandler extends \danog\MadelineProto\EventHandler
                     if (empty($msghistory['users'])) return;
 
                     foreach ($msghistory['users'] as $msgh) {
-                        $this->pcall("channels.deleteUserHistory", ['channel' => $chat, 'user_id' => $msgh['id']], true);
+                        $this->pcall("channels.deleteUserHistory", ['channel' => $chat, 'user_id' => $msgh['id']], true, 'clearchat');
                     }
                 }
             }
@@ -327,7 +327,7 @@ class EventHandler extends \danog\MadelineProto\EventHandler
         try {
             $chatinfo = $this->get_pwr_chat($chat);
             foreach ($chatinfo['participants'] as $part) {
-                $this->pcall("channels.deleteUserHistory", ['channel' => $chat, 'user_id' => $part['user']['id']], true);
+                $this->pcall("channels.deleteUserHistory", ['channel' => $chat, 'user_id' => $part['user']['id']], true, 'clearchat');
             }
         } catch (\danog\MadelineProto\Exception $e) {
             $this->messages->sendMessage(['peer' => self::logchannel, 'text' => $e->getMessage()]);
